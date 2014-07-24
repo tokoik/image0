@@ -12,17 +12,9 @@
 #  pragma comment(lib, "opencv_highgui" CV_VERSION_STR CV_EXT_STR)
 #endif
 
-#define BENCHMARK 0
-#define FLIPIMAGE 0
-
 // 補助プログラム
 #include "gg.h"
 using namespace gg;
-
-// 視点
-const GLfloat fovy = 0.6f;
-const GLfloat zNear = 1.0f;
-const GLfloat zFar = 10.0f;
 
 //
 // ウィンドウ関連の処理
@@ -168,11 +160,6 @@ int main()
   camera.grab();
   const GLsizei capture_width(GLsizei(camera.get(CV_CAP_PROP_FRAME_WIDTH)));
   const GLsizei capture_height(GLsizei(camera.get(CV_CAP_PROP_FRAME_HEIGHT)));
-  //const GLsizei capture_width(640);
-  //const GLsizei capture_height(480);
-  //camera.set(CV_CAP_PROP_FRAME_WIDTH, double(capture_width));
-  //camera.set(CV_CAP_PROP_FRAME_HEIGHT, double(capture_height));
-  //camera.set(CV_CAP_PROP_FORMAT, CV_8UC3);
   
   // GLFW を初期化する
   if (glfwInit() == GL_FALSE)
@@ -185,9 +172,9 @@ int main()
   // プログラム終了時の処理を登録する
   atexit(cleanup);
 
-  // OpenGL Version 3.2 Core Profile を選択する
+  // OpenGL Version 3.3 Core Profile を選択する
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
@@ -236,12 +223,6 @@ int main()
   // uniform 変数のインデックスの検索（見つからなければ -1）
   const GLuint imageLoc(glGetUniformLocation(program, "image"));
   
-#if BENCHMARK
-  // 時間計測用の Query Object
-  GLuint query;
-  glGenQueries(1, &query);
-#endif
-
   // ウィンドウが開いている間繰り返す
   while (window.shouldClose() == GL_FALSE)
   {
@@ -254,25 +235,11 @@ int main()
       camera.retrieve(frame, 3);
 
       // 切り出した画像をテクスチャに転送する
-#if FLIPIMAGE
-      for (int y = 0; y < frame.rows; ++y)
-      {
-        glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, frame.rows - y - 1, frame.cols, 1,
-          GL_BGR, GL_UNSIGNED_BYTE, frame.data + frame.step * y);
-      }
-      //cv::Mat flipped;
-      //cv::flip(frame, flipped, 0);
-      //glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, frame.cols, flipped.rows, GL_BGR, GL_UNSIGNED_BYTE, flipped.data);
-#else
-      glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, frame.cols, frame.rows, GL_BGR, GL_UNSIGNED_BYTE, frame.data);
-#endif
+      cv::Mat flipped;
+      cv::flip(frame, flipped, 0);
+      glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, frame.cols, flipped.rows, GL_BGR, GL_UNSIGNED_BYTE, flipped.data);
     }
 
-#if BENCHMARK
-    // 時間の計測開始
-    glBeginQuery(GL_TIME_ELAPSED, query);
-#endif
-    
     // シェーダプログラムの使用開始
     glUseProgram(program);
     
@@ -294,18 +261,6 @@ int main()
     
     // シェーダプログラムの使用終了
     glUseProgram(0);
-    
-#if BENCHMARK
-    // 時間の計測終了
-    glEndQuery(GL_TIME_ELAPSED);
-    
-    // 経過時間の取得
-    GLint done;
-    do { glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done); } while (!done);
-    GLuint64 elapsed_time;
-    glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
-    std::cout << static_cast<double>(elapsed_time) * 0.000001 << std::endl;
-#endif
 
     // カラーバッファを入れ替えてイベントを取り出す
     window.swapBuffers();
