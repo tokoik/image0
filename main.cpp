@@ -166,8 +166,12 @@ int main()
   
   // カメラの初期設定
   camera.grab();
-  const GLsizei capture_width(static_cast<GLsizei>(camera.get(CV_CAP_PROP_FRAME_WIDTH)));
-  const GLsizei capture_height(static_cast<GLsizei>(camera.get(CV_CAP_PROP_FRAME_HEIGHT)));
+  //const GLsizei capture_width(static_cast<GLsizei>(camera.get(CV_CAP_PROP_FRAME_WIDTH)));
+  //const GLsizei capture_height(static_cast<GLsizei>(camera.get(CV_CAP_PROP_FRAME_HEIGHT)));
+  const GLsizei capture_width(640);
+  const GLsizei capture_height(480);
+  camera.set(CV_CAP_PROP_FRAME_WIDTH, double(capture_width));
+  camera.set(CV_CAP_PROP_FRAME_HEIGHT, double(capture_height));
   
   // GLFW を初期化する
   if (glfwInit() == GL_FALSE)
@@ -182,7 +186,7 @@ int main()
 
   // OpenGL Version 3.2 Core Profile を選択する
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
@@ -250,11 +254,14 @@ int main()
 
       // 切り出した画像をテクスチャに転送する
 #if FLIPIMAGE
-      for (int y = 0; y < frame.rows; ++y)
-      {
-        glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, frame.rows - y - 1, frame.cols, 1,
-          GL_BGR, GL_UNSIGNED_BYTE, frame.data + frame.step * y);
-      }
+      //for (int y = 0; y < frame.rows; ++y)
+      //{
+      //  glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, frame.rows - y - 1, frame.cols, 1,
+      //    GL_BGR, GL_UNSIGNED_BYTE, frame.data + frame.step * y);
+      //}
+      cv::Mat flipped;
+      cv::flip(frame, flipped, 0);
+      glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, frame.cols, flipped.rows, GL_BGR, GL_UNSIGNED_BYTE, flipped.data);
 #else
       glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, frame.cols, frame.rows, GL_BGR, GL_UNSIGNED_BYTE, frame.data);
 #endif
