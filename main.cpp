@@ -149,7 +149,7 @@ static void cleanup()
 int main()
 {
   // OpenCV によるビデオキャプチャを初期化する
-  cv::VideoCapture camera(1);
+  cv::VideoCapture camera(CV_CAP_ANY);
   if (!camera.isOpened())
   {
     std::cerr << "cannot open input" << std::endl;
@@ -211,7 +211,7 @@ int main()
   GLuint image;
   glGenTextures(1, &image);
   glBindTexture(GL_TEXTURE_RECTANGLE, image);
-  glTexImage2D(GL_TEXTURE_RECTANGLE, 0, GL_RGBA, capture_width, capture_height, 0, GL_BGR, GL_UNSIGNED_BYTE, NULL);
+  glTexImage2D(GL_TEXTURE_RECTANGLE, 0, GL_RGB, capture_width, capture_height, 0, GL_BGR, GL_UNSIGNED_BYTE, NULL);
   glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
