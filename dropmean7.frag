@@ -1,6 +1,6 @@
 #version 330
 
-// 7~7 ‚Ìè‡’l–¢–‚ğœ‚¢‚½•½‹Ï
+// 7x7 ‚Ìè‡’l–¢–‚ğœ‚¢‚½•½‹Ï
 
 uniform sampler2DRect image;
 
