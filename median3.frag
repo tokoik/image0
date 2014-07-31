@@ -22,7 +22,7 @@ void s3(inout vec4 a, inout vec4 b, inout vec4 c)
   s2(b, c);
 }
 
-void main(void)
+void main()
 {
   vec4 h[9] = vec4[]
   (

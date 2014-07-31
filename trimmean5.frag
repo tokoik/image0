@@ -15,7 +15,7 @@ void f(inout vec4 csum, inout vec4 cmin, inout vec4 cmax, const in vec4 c)
 }
 
 // Å‘å’l‚ÆÅ¬’l‚ğŠÜ‚Ü‚È‚¢•½‹Ï‚ğ‹‚ß‚é
-void main(void)
+void main()
 {
   vec4 csum = texture(image, gl_FragCoord.xy);
   vec4 cmin = csum;

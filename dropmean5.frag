@@ -17,7 +17,7 @@ vec4 f(const in vec4 c)
 }
 
 // è‡’l–¢–‚ğŠÜ‚Ü‚È‚¢•½‹Ï‚ğ‹‚ß‚é
-void main(void)
+void main()
 {
   vec4 csum = f(texture(image, gl_FragCoord.xy));
   

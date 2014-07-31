@@ -7,7 +7,7 @@ uniform sampler2DRect image;
 layout (location = 0) out vec4 fc;
 
 // d‚İ•t‚«•½‹Ï‚ğ‹‚ß‚é
-void main(void)
+void main()
 {
   vec4 dx = (textureOffset(image, gl_FragCoord.xy, ivec2( 1,  0))
            - textureOffset(image, gl_FragCoord.xy, ivec2(-1,  0))) * 0.196640663

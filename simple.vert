@@ -2,7 +2,7 @@
 
 layout (location = 0) in vec4 pv;
 
-void main(void)
+void main()
 {
   gl_Position = pv;
 }
