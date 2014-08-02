@@ -226,8 +226,6 @@ int main()
   // ウィンドウが開いている間繰り返す
   while (window.shouldClose() == GL_FALSE)
   {
-    glBindTexture(GL_TEXTURE_RECTANGLE, image);
-
     if (camera.grab())
     {
       // キャプチャ映像から画像を切り出す
@@ -237,6 +235,7 @@ int main()
       // 切り出した画像をテクスチャに転送する
       cv::Mat flipped;
       cv::flip(frame, flipped, 0);
+      glBindTexture(GL_TEXTURE_RECTANGLE, image);
       glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, 0, 0, frame.cols, flipped.rows, GL_BGR, GL_UNSIGNED_BYTE, flipped.data);
     }
 
