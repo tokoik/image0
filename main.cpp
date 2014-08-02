@@ -132,6 +132,12 @@ public:
   {
     return key;
   }
+
+  // ƒL[‚Ìó‘Ô‚ğ’²‚×‚é
+  int testKey(int key) const
+  {
+    return glfwGetKey(window, key);
+  }
 };
 
 //
