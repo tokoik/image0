@@ -6771,10 +6771,10 @@ gg::GgPoints *gg::ggPointsCube(GLuint nv, GLfloat length, GLfloat cx, GLfloat cy
 {
   // メモリを確保する
   GLfloat (*pos)[3](new(std::nothrow) GLfloat[nv][3]);
-  
+
   // メモリが確保できなければ戻る
   if (pos == NULL) return NULL;
-  
+
   // 点を生成する
   for (GLuint v = 0; v < nv; ++v)
   {
@@ -6782,13 +6782,13 @@ gg::GgPoints *gg::ggPointsCube(GLuint nv, GLfloat length, GLfloat cx, GLfloat cy
     pos[v][1] = (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) - 0.5f) * length + cy;
     pos[v][2] = (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) - 0.5f) * length + cz;
   }
-  
+
   // ポイントデータの GgPoints オブジェクトを作成する
   GgPoints *const points(new gg::GgPoints(nv, pos, GL_POINTS));
-  
+
   // 作業用のメモリを解放する
   delete[] pos;
-  
+
   // GgPoints オブジェクトを返す
   return points;
 }

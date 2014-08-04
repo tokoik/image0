@@ -26,15 +26,15 @@ class Window
 
   // 透視投影変換行列
   GgMatrix mp;
-  
+
   // タイプしたキー
   int key;
-  
+
 public:
 
   // コンストラクタ
   Window(const char *title = "Game Graphics", int width = 640, int height = 480)
-    : window(glfwCreateWindow(width, height, title, NULL, NULL)), key(0)
+    : window(glfwCreateWindow(width, height, title, NULL, NULL)), key(GLFW_KEY_UNKNOWN)
   {
     if (window == NULL)
     {
@@ -57,10 +57,10 @@ public:
 
     // キーボード操作時に呼び出す処理の登録
     glfwSetKeyCallback(window, keyboard);
-    
+
     // ウィンドウのサイズ変更時に呼び出す処理を登録する
     glfwSetFramebufferSizeCallback(window, resize);
-    
+
     // ウィンドウの設定を初期化する
     resize(window, width, height);
   }
@@ -97,43 +97,45 @@ public:
     {
       // このインスタンスの this ポインタを得る
       Window *const instance(static_cast<Window *>(glfwGetWindowUserPointer(window)));
-      
+
       if (instance != NULL)
       {
         instance->key = key;
       }
     }
   }
-  
+
   // ウィンドウのサイズ変更時の処理
   static void resize(GLFWwindow *window, int width, int height)
   {
     // ウィンドウ全体をビューポートにする
     glViewport(0, 0, width, height);
-    
+
     // このインスタンスの this ポインタを得る
     Window *const instance(static_cast<Window *>(glfwGetWindowUserPointer(window)));
-    
+
     if (instance != NULL)
     {
       // 透視投影変換行列を求める（アスペクト比 w / h）
       instance->mp.loadPerspective(0.5f, (float)width / (float)height, 1.0f, 20.0f);
     }
   }
-  
+
   // 投影変換行列を取り出す
   const GgMatrix &getMp() const
   {
     return mp;
   }
-  
-  // キーを取り出す
-  int getKey() const
+
+  // 最後にタイプしたキーを取り出す
+  int getKey()
   {
-    return key;
+    int lastkey = key;
+    key = GLFW_KEY_UNKNOWN;
+    return lastkey;
   }
 
-  // キーの状態を調べる
+  // 現在のキーの状態を調べる
   int testKey(int key) const
   {
     return glfwGetKey(window, key);
@@ -161,12 +163,12 @@ int main()
     std::cerr << "cannot open input" << std::endl;
     exit(1);
   }
-  
+
   // カメラの初期設定
   camera.grab();
   const GLsizei capture_width(GLsizei(camera.get(CV_CAP_PROP_FRAME_WIDTH)));
   const GLsizei capture_height(GLsizei(camera.get(CV_CAP_PROP_FRAME_HEIGHT)));
-  
+
   // GLFW を初期化する
   if (glfwInit() == GL_FALSE)
   {
@@ -189,17 +191,17 @@ int main()
 
   // 背景色を指定する
   glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-  
+
   // 頂点配列オブジェクト
   GLuint vao;
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
-  
+
   // 頂点バッファオブジェクト
   GLuint vbo;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  
+
   // 図形の読み込み
   static const GLfloat position[][2] =
   {
@@ -212,7 +214,7 @@ int main()
   glBufferData(GL_ARRAY_BUFFER, sizeof position, position, GL_STATIC_DRAW);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
   glEnableVertexAttribArray(0);
-  
+
   // テクスチャを準備する
   GLuint image;
   glGenTextures(1, &image);
@@ -228,7 +230,7 @@ int main()
 
   // uniform 変数のインデックスの検索（見つからなければ -1）
   const GLuint imageLoc(glGetUniformLocation(program, "image"));
-  
+
   // ウィンドウが開いている間繰り返す
   while (window.shouldClose() == GL_FALSE)
   {
@@ -247,23 +249,23 @@ int main()
 
     // シェーダプログラムの使用開始
     glUseProgram(program);
-    
+
     // uniform サンプラの指定
     glUniform1i(imageLoc, 0);
-    
+
     // テクスチャユニットとテクスチャの指定
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_RECTANGLE, image);
-    
+
     // 描画に使う頂点配列オブジェクトの指定
     glBindVertexArray(vao);
-    
+
     // 図形の描画
     glDrawArrays(GL_TRIANGLE_FAN, 0, vertices);
-    
+
     // 頂点配列オブジェクトの指定解除
     glBindVertexArray(0);
-    
+
     // シェーダプログラムの使用終了
     glUseProgram(0);
 
