@@ -157,7 +157,7 @@ static void cleanup()
 int main()
 {
   // OpenCV によるビデオキャプチャを初期化する
-  cv::VideoCapture camera(CV_CAP_ANY);
+  cv::VideoCapture camera(1);
   if (!camera.isOpened())
   {
     std::cerr << "cannot open input" << std::endl;
